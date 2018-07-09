@@ -4,7 +4,7 @@
 
 using namespace std;
 
-void swap(int A[], int i, int j)
+void Swap(int A[], int i, int j)
 {
     int temp = A[i];
     A[i] = A[j];
@@ -22,7 +22,7 @@ void BubbleSort(int A[], int n)
         {
             if (A[j] > A[j+1])
             {
-                swap(A,j,j+1);
+                Swap(A,j,j+1);
                 swapFlag = true;
             }
         }
@@ -46,7 +46,7 @@ void CocktailSort(int A[], int n)
         {
             if (A[i] > A[i+1])
             {
-                swap(A,i,i+1);
+                Swap(A,i,i+1);
                 swapFlag = true;
             }
         }
@@ -61,7 +61,7 @@ void CocktailSort(int A[], int n)
         {
             if (A[i] < A[i-1])
             {
-                swap(A,i,i-1);
+                Swap(A,i,i-1);
                 swapFlag = true;
             }
         }
@@ -88,7 +88,7 @@ void SelectionSort(int A[], int n)
         }
         if (min != i)
         {
-            swap(A,i,min);
+            Swap(A,i,min);
         }
     }
 }
@@ -204,7 +204,7 @@ void MergeSortRecursion2(int A[], int len)
 }
 
 // 归并排序(Merge Sort): 非递归(迭代)实现
-void MergeSortIteration(int A[], int len)    // 非递归(迭代)实现的归并排序(自底向上)
+void MergeSortIteration(int A[], int len)   // 非递归(迭代)实现的归并排序(自底向上)
 {
     int left, mid, right;                   // 子数组索引,前一个为A[left...mid]，后一个子数组为A[mid+1...right]
     for (int i = 1; i < len; i *= 2)        // 子数组的大小i初始为1，每轮翻倍
@@ -220,7 +220,41 @@ void MergeSortIteration(int A[], int len)    // 非递归(迭代)实现的归并
     }
 }
 
-// 归并排序(Merge Sort): 非递归(迭代)实现
+void Heapify(int A[], int i, int size)  // 从A[i]向下进行堆调整
+{
+    int left_child = 2 * i + 1;         // 左孩子索引
+    int right_child = 2 * i + 2;        // 右孩子索引
+    int max = i;                        // 选出当前结点与其左右孩子三者之中的最大值
+    if (left_child < size && A[left_child] > A[max])
+        max = left_child;
+    if (right_child < size && A[right_child] > A[max])
+        max = right_child;
+    if (max != i)
+    {
+        Swap(A, i, max);                // 把当前结点和它的最大(直接)子节点进行交换
+        Heapify(A, max, size);          // 递归调用，继续从当前结点向下进行堆调整
+    }
+}
+
+int BuildHeap(int A[], int n)           // 建堆，时间复杂度O(n)
+{
+    int heap_size = n;
+    for (int i = heap_size / 2 - 1; i >= 0; i--) // 从每一个非叶结点开始向下进行堆调整
+        Heapify(A, i, heap_size);
+    return heap_size;
+}
+
+void HeapSort(int A[], int n)
+{
+    int heap_size = BuildHeap(A, n);    // 建立一个最大堆
+    while (heap_size > 1)               // 堆（无序区）元素个数大于1，未完成排序
+    {
+        // 将堆顶元素与堆的最后一个元素互换，并从堆中去掉最后一个元素
+        // 此处交换操作很有可能把后面元素的稳定性打乱，所以堆排序是不稳定的排序算法
+        Swap(A, 0, --heap_size);
+        Heapify(A, 0, heap_size);       // 从新的堆顶元素开始向下进行堆调整，时间复杂度O(logn)
+    }
+}
 
 typedef void (*pFunc)(int A[], int n);
 
@@ -268,6 +302,7 @@ int main ()
     testSort(ShellSort);
     testSort(MergeSortRecursion2);
     testSort(MergeSortIteration);
+    testSort(HeapSort);
 
     testSortTime(BubbleSort);
     testSortTime(CocktailSort);
@@ -277,6 +312,7 @@ int main ()
     testSortTime(ShellSort);
     testSortTime(MergeSortRecursion2);
     testSortTime(MergeSortIteration);
+    testSortTime(HeapSort);
 
     return 0;
 }

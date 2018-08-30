@@ -1,6 +1,7 @@
 #include <iostream>
 // #include <ctime>
 #include <sys/time.h>
+#include <malloc.h>
 
 using namespace std;
 
@@ -11,7 +12,7 @@ void Swap(int A[], int i, int j)
     A[j] = temp;
 }
 
-// 冒泡排序
+// 冒泡排序(Bubble Sort)
 void BubbleSort(int A[], int n)
 {
     bool swapFlag = false;
@@ -73,7 +74,7 @@ void CocktailSort(int A[], int n)
     }
 }
 
-// 选择排序
+// 选择排序(Selection Sort)
 void SelectionSort(int A[], int n)
 {
     for (int i = 0; i < n-1; ++i)
@@ -93,7 +94,7 @@ void SelectionSort(int A[], int n)
     }
 }
 
-// 插入排序
+// 插入排序(Insertion Sort)
 void InsertionSort(int A[], int n)
 {
     for (int i = 1; i < n; ++i)
@@ -244,6 +245,7 @@ int BuildHeap(int A[], int n)           // 建堆，时间复杂度O(n)
     return heap_size;
 }
 
+// 堆排序(Heap Sort)
 void HeapSort(int A[], int n)
 {
     int heap_size = BuildHeap(A, n);    // 建立一个最大堆
@@ -256,6 +258,178 @@ void HeapSort(int A[], int n)
     }
 }
 
+int Partition(int A[], int left, int right)  // 划分函数
+{
+    int pivot = A[right];               // 这里每次都选择最后一个元素作为基准
+    int tail = left - 1;                // tail为小于基准的子数组最后一个元素的索引
+    for (int i = left; i < right; i++)  // 遍历基准以外的其他元素
+    {
+        if (A[i] <= pivot)              // 把小于等于基准的元素放到前一个子数组末尾
+        {
+            Swap(A, ++tail, i);
+        }
+    }
+    Swap(A, tail + 1, right);           // 最后把基准放到前一个子数组的后边，剩下的子数组既是大于基准的子数组
+                                        // 该操作很有可能把后面元素的稳定性打乱，所以快速排序是不稳定的排序算法
+    return tail + 1;                    // 返回基准的索引
+}
+
+// 快速排序(Quick Sort)
+void QuickSort(int A[], int left, int right)
+{
+    if (left >= right)
+        return;
+    int pivot_index = Partition(A, left, right); // 基准的索引
+    QuickSort(A, left, pivot_index - 1);
+    QuickSort(A, pivot_index + 1, right);
+}
+
+void QuickSort2(int A[], int n)
+{
+    QuickSort(A, 0, n-1);
+}
+
+const int k = 100;   // 基数为100，排序[0,99]内的整数
+int C[k];            // 计数数组
+
+// 计数排序(Counting Sort)
+void CountingSort(int A[], int n)
+{
+    for (int i = 0; i < k; i++)   // 初始化，将数组C中的元素置0(此步骤可省略，整型数组元素默认值为0)
+    {
+        C[i] = 0;
+    }
+    for (int i = 0; i < n; i++)   // 使C[i]保存着等于i的元素个数
+    {
+        C[A[i]]++;
+    }
+    for (int i = 1; i < k; i++)   // 使C[i]保存着小于等于i的元素个数，排序后元素i就放在第C[i]个输出位置上
+    {
+        C[i] = C[i] + C[i - 1];
+    }
+    int *B = (int *)malloc((n) * sizeof(int));// 分配临时空间,长度为n，用来暂存中间数据
+    for (int i = n - 1; i >= 0; i--)    // 从后向前扫描保证计数排序的稳定性(重复元素相对次序不变)
+    {
+        B[--C[A[i]]] = A[i];      // 把每个元素A[i]放到它在输出数组B中的正确位置上
+                                  // 当再遇到重复元素时会被放在当前元素的前一个位置上保证计数排序的稳定性
+    }
+    for (int i = 0; i < n; i++)   // 把临时空间B中的数据拷贝回A
+    {
+        A[i] = B[i];
+    }
+    free(B);    // 释放临时空间
+}
+
+const int dn = 3;                // 待排序的元素为三位数及以下
+const int k2 = 10;               // 基数为10，每一位的数字都是[0,9]内的整数
+int C2[k2];
+
+int GetDigit(int x, int d)          // 获得元素x的第d位数字
+{
+    int radix[] = { 1, 1, 10, 100 };// 最大为三位数，所以这里只要到百位就满足了
+    return (x / radix[d]) % 10;
+}
+
+void CountingSort2(int A[], int n, int d)    // 依据元素的第d位数字，对A数组进行计数排序
+{
+    for (int i = 0; i < k; i++)
+    {
+        C2[i] = 0;
+    }
+    for (int i = 0; i < n; i++)
+    {
+        C2[GetDigit(A[i], d)]++;
+    }
+    for (int i = 1; i < k; i++)
+    {
+        C2[i] = C2[i] + C2[i - 1];
+    }
+    int *B = (int*)malloc(n * sizeof(int));
+    for (int i = n - 1; i >= 0; i--)
+    {
+        int digit = GetDigit(A[i], d);  // 元素A[i]当前位数字为digit
+        B[--C2[digit]] = A[i];          // 根据当前位数字，把每个元素A[i]放到它在输出数组B中的正确位置上
+        // 当再遇到当前位数字同为digit的元素时，会将其放在当前元素的前一个位置上保证计数排序的稳定性
+    }
+    for (int i = 0; i < n; i++)
+    {
+        A[i] = B[i];
+    }
+    free(B);
+}
+
+// 基数排序(Radix Sort)
+void LsdRadixSort(int A[], int n)     // 最低位优先基数排序
+{
+    for (int d = 1; d <= dn; d++)     // 从低位到高位
+        CountingSort2(A, n, d);        // 依据第d位数字对A进行计数排序
+}
+
+/* 本程序用数组模拟桶 */
+const int bn = 10;    // 这里排序[0,99]的元素，使用10个桶就够了，也可以根据输入动态确定桶的数量
+int Cb[bn];          // 计数数组，存放桶的边界信息
+
+void InsertionSort2(int A[], int left, int right)
+{
+    for (int i = left + 1; i <= right; i++)  // 从第二张牌开始抓，直到最后一张牌
+    {
+        int get = A[i];
+        int j = i - 1;
+        while (j >= left && A[j] > get)
+        {
+            A[j + 1] = A[j];
+            j--;
+        }
+        A[j + 1] = get;
+    }
+}
+
+int MapToBucket(int x)
+{
+    return x / 10;    // 映射函数f(x)，作用相当于快排中的Partition，把大量数据分割成基本有序的数据块
+}
+
+void CountingSortb(int A[], int n)
+{
+    for (int i = 0; i < bn; i++)
+    {
+        Cb[i] = 0;
+    }
+    for (int i = 0; i < n; i++)     // 使C[x]保存着x号桶中元素的个数
+    {
+        Cb[MapToBucket(A[i])]++;
+    }
+    for (int i = 1; i < bn; i++)    // 定位桶边界：初始时，C[i]-1为i号桶最后一个元素的位置
+    {
+        Cb[i] = Cb[i] + Cb[i - 1];
+    }
+    int *B = (int *)malloc((n) * sizeof(int));
+    for (int i = n - 1; i >= 0; i--)// 从后向前扫描保证计数排序的稳定性(重复元素相对次序不变)
+    {
+        int b = MapToBucket(A[i]);  // 元素A[i]位于b号桶
+        B[--Cb[b]] = A[i];          // 把每个元素A[i]放到它在输出数组B中的正确位置上
+                                    // 桶的边界被更新：C[b]为b号桶第一个元素的位置
+    }
+    for (int i = 0; i < n; i++)
+    {
+        A[i] = B[i];
+    }
+    free(B);
+}
+
+// 桶排序(Bucket Sort)
+void BucketSort(int A[], int n)
+{
+    CountingSortb(A, n);         // 利用计数排序确定各个桶的边界（分桶）
+    for (int i = 0; i < bn; i++) // 对每一个桶中的元素应用插入排序
+    {
+        int left = Cb[i];         // C[i]为i号桶第一个元素的位置
+        int right = (i == bn - 1 ? n - 1 : Cb[i + 1] - 1);// C[i+1]-1为i号桶最后一个元素的位置
+        if (left < right)        // 对元素个数大于1的桶进行桶内插入排序
+            InsertionSort2(A, left, right);
+    }
+}
+
 typedef void (*pFunc)(int A[], int n);
 
 int Arr[] = {   47, 40, 43, 35,  2, 51, 39, 11, 95, 20, 98, 19, 25, 64, 48, 75, 79, 13, 75, 75,
@@ -263,6 +437,7 @@ int Arr[] = {   47, 40, 43, 35,  2, 51, 39, 11, 95, 20, 98, 19, 25, 64, 48, 75, 
                 29, 29, 73, 51, 17, 23, 72, 28, 18, 85, 32,  3, 50, 21, 62, 35, 18, 92, 39, 23,
                 29, 43, 93, 57,  3, 46, 57, 41, 44, 21, 48, 77, 48, 66, 69, 55, 67, 19, 38, 72,
                 78,  5, 60, 78, 86,  1, 44, 73, 14, 67, 14, 19,  7, 35, 74, 90, 84, 51, 15, 19 };
+int Arr2[] = { 20, 90, 64, 289, 998, 365, 852, 123, 789, 456 };
 
 void testSort(pFunc f)
 {
@@ -271,6 +446,17 @@ void testSort(pFunc f)
     for (int i = 0; i < n; ++i)
     {
         cout << Arr[i] << ' ';
+    }
+    cout << endl;
+}
+
+void testSort2(pFunc f)
+{
+    int n = sizeof(Arr2)/sizeof(int);
+    f(Arr2, n);
+    for (int i = 0; i < n; ++i)
+    {
+        cout << Arr2[i] << ' ';
     }
     cout << endl;
 }
@@ -303,6 +489,10 @@ int main ()
     testSort(MergeSortRecursion2);
     testSort(MergeSortIteration);
     testSort(HeapSort);
+    testSort(QuickSort2);
+    testSort(CountingSort);
+    testSort2(LsdRadixSort);
+    testSort(BucketSort);
 
     testSortTime(BubbleSort);
     testSortTime(CocktailSort);
@@ -313,6 +503,9 @@ int main ()
     testSortTime(MergeSortRecursion2);
     testSortTime(MergeSortIteration);
     testSortTime(HeapSort);
+    testSortTime(QuickSort2);
+    testSortTime(CountingSort);
+    testSortTime(BucketSort);
 
     return 0;
 }

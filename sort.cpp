@@ -332,7 +332,7 @@ int GetDigit(int x, int d)          // 获得元素x的第d位数字
 
 void CountingSort2(int A[], int n, int d)    // 依据元素的第d位数字，对A数组进行计数排序
 {
-    for (int i = 0; i < k; i++)
+    for (int i = 0; i < k2; i++)
     {
         C2[i] = 0;
     }
@@ -340,7 +340,7 @@ void CountingSort2(int A[], int n, int d)    // 依据元素的第d位数字，�
     {
         C2[GetDigit(A[i], d)]++;
     }
-    for (int i = 1; i < k; i++)
+    for (int i = 1; i < k2; i++)
     {
         C2[i] = C2[i] + C2[i - 1];
     }

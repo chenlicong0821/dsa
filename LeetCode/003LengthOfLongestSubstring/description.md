@@ -1,3 +1,6 @@
+3. Longest Substring Without Repeating Characters
+难度 中等
+
 Given a string, find the length of the longest substring without repeating characters.
 
 Example 1:

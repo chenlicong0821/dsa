@@ -1,7 +1,7 @@
 from typing import Sequence
 def cloudmall_interview1(numbers: Sequence[int]) -> Sequence[int]:
     if not numbers:
-        return  numbers
+        return numbers
 
     # 1. 先把大于等于0的都交换到左边，小于0的交换到右边
     left = 0

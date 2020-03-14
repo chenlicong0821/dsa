@@ -1,0 +1,16 @@
+# Python codec #    
+###################### 
+*.pyc
+
+# MacOS generated files #    
+######################    
+.DS_Store
+.Trashes
+
+# vscode
+.vscode
+
+# IntelliJ IDEA
+.idea
+
+# dir

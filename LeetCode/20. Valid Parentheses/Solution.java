@@ -16,13 +16,13 @@ class Solution {
             if (map.containsKey(c)) {
                 // 左括号入栈
                 // 剪枝：stack元素过多的话，s后半部全是有括号的时候也无法匹配
-                if (stack.size()+1 <= n-i-1) {
+                if (stack.size() + 1 <= n - i - 1) {
                     stack.push(c);
                     continue;
                 }
             } else {
                 // 右括号与栈中的左括号匹配
-                if (!stack.empty() && c == map.get(stack.pop())){
+                if (!stack.empty() && c == map.get(stack.pop())) {
                     continue;
                 }
             }

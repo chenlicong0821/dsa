@@ -1,28 +1,25 @@
 class Solution {
    public:
-    void replaceSpace(char* str, int length) {
-        if (str == nullptr || length <= 0)
-            return;  // 判空操作
+    /**
+     * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
+     *
+     *
+     * @param s string字符串
+     * @return string字符串
+     */
+    string replaceSpace(string s) {
+        if (s.empty())
+            return s;
 
-        int cnt = 0;  // 空格的个数
-        for (int i = 0; i < length; ++i) {
-            if (str[i] == ' ')
-                cnt++;
-        }
-        if (cnt == 0)
-            return;  // 没有空格，直接返回
-
-        int newIndex = length - 1 + cnt * 2;
-        for (int i = length - 1; i < newIndex && i >= 0; --i) {
-            if (str[i] == ' ') {
-                str[newIndex--] = '0';
-                str[newIndex--] = '2';
-                str[newIndex--] = '%';
+        string ans = "";
+        for (int i = 0; i < s.size(); ++i) {
+            if (s[i] == ' ') {
+                ans += "%20";
             } else {
-                str[newIndex--] = str[i];
+                ans += s[i];
             }
         }
 
-        return;
+        return ans;
     }
 };
